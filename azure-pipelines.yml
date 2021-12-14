@@ -4,19 +4,17 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
-- main
+- '*'
 
 pool:
-  vmImage: ubuntu-latest
-
-variables:
-  buildConfiguration: 'Release'
+  vmImage: 'ubuntu-20.04'
+  demands:
+  - npm
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+- task: UseDotNet@2
+  displayName: 'Use .NET SDK 5.x'
   inputs:
-    packageType: sdk
     version: '5.x'
 
 - task: Npm@1
@@ -45,9 +43,9 @@ steps:
   inputs:
     command: 'build'
     arguments: '--no-restore --configuration Release'
-    projects: '**/*.csproj' 
+    projects: '**/*.csproj'
 
-    - task: DotNetCoreCLI@2
+- task: DotNetCoreCLI@2
   displayName: 'Publish the project - Release'
   inputs:
     command: 'publish'
